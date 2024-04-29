@@ -20,16 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module CPU(Instruction, LoadInstruction, Reset, clk, out);
+module CPU(out, Instruction, LoadInstruction, reset, clk);
 
 input   [31:0]  Instruction;
 input           LoadInstruction;
-input           Reset;
+input           reset;
 input           clk;
 
 output  [31:0]  out;
 
 // IF Wires
+wire [31:0] PC_o, PC_i;
+wire [31:0] InstructionAddress, LoadAddress;
+wire IF_flush, Load;
 
 // IF/ID Wires
 
@@ -48,6 +51,11 @@ output  [31:0]  out;
 // WB Wires
 
 //////////////////      IF Stage        ////////////////////////////
+reg_32bit   PC(PC_o, PC_i, IF_flush, reset, clk);
+
+add_4       PC_Incrementer(PC_o, PC_i);
+mux2to1     Address_mux(InstructionAddress, PC_o, LoadAddress, Load);
+
 
 
 //////////////////      IF/ID Stage	    ////////////////////////////
