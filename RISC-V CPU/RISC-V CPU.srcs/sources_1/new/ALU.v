@@ -22,7 +22,7 @@
 
 module ALU(op, a, b, out);
 
-input   [3:0]   op;
+input   [6:0]   op;
 input   [31:0]  a;
 input   [31:0]  b;
 
