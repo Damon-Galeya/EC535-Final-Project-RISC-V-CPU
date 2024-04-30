@@ -30,11 +30,12 @@ input           clk;
 output  [31:0]  out;
 
 // IF Wires
-wire [31:0] PC_o, PC_i;
-wire [31:0] InstructionAddress, LoadAddress;
-wire IF_flush, Load;
+wire    [31:0]  PC_o, PC_i, PC_plus4, Instruction_o;
+wire    [31:0]  InstructionAddress, LoadAddress;
+wire            IF_flush, is_Load;
 
 // IF/ID Wires
+wire    [31:0]  IDEX_PC, IDEX_IR;
 
 // ID Wires
 
@@ -52,14 +53,15 @@ wire IF_flush, Load;
 
 //////////////////      IF Stage        ////////////////////////////
 reg_32bit   PC(PC_o, PC_i, IF_flush, reset, clk);
+memory      InstructionMemory(Instruction_o, Instruction, PC_o, is_Load, 1'b1, clk); //turn into cache later if time
 
-add_4       PC_Incrementer(PC_o, PC_i);
-mux2to1     Address_mux(InstructionAddress, PC_o, LoadAddress, Load);
-
-
+add_4       PC_Incrementer(PC_plus4, PC_o);
+mux2to1     Address_mux(InstructionAddress, PC_plus4, LoadAddress, is_Load);
 
 //////////////////      IF/ID Stage	    ////////////////////////////
-
+reg_32bit   IFID_PCreg(IDEX_PC, PC_plus4, IFID_enable, IF_flushORreset, clk);
+or          flushor(IF_flushORreset, IF_flush, reset);
+reg_32bit   IFID_IRreg(IDEX_IR, Instruction_o, IFID_enable, IF_flushORreset, clk);
 
 //////////////////      ID Stage        ////////////////////////////
 
