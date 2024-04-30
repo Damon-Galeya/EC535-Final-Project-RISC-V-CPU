@@ -66,7 +66,7 @@ always @(Instruction, BrEq, BrLT) begin
             Imm_Sel = 0;
             Reg_WEn = 1;
             Mem_RW  = 0;
-            WB_Sel  = 2'b0;
+            WB_Sel  = 2'b01;//write back alu
             PC_Sel  = 0;
             Br_Un   = 0;
             IF_flush= 0;
@@ -80,7 +80,7 @@ always @(Instruction, BrEq, BrLT) begin
             Imm_Sel = i_imm;
             Reg_WEn = 1;
             Mem_RW  = 0;
-            WB_Sel  = 0;
+            WB_Sel  = 2'b01; //write back alu
             PC_Sel  = 0;
             Br_Un   = 0;
             IF_flush= 0;
@@ -88,48 +88,56 @@ always @(Instruction, BrEq, BrLT) begin
             EX_flush= 0;
             end
         load: begin
-            ALU_Op  = 0;
+            ALU_Op  = 4'd0;
             A_Sel   = 0;
-            B_Sel   = 0;
-            Imm_Sel = 0;
-            Reg_WEn = 0;
+            B_Sel   = 1;
+            Imm_Sel = i_imm;
+            Reg_WEn = 1;
             Mem_RW  = 0;
-            WB_Sel  = 0;
+            WB_Sel  = 2'b0; //write back mem
             PC_Sel  = 0;
             Br_Un   = 0;
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
             end
-        r_type: begin
-            ALU_Op  = 0;
+        store: begin
+            ALU_Op  = 4'd0;
             A_Sel   = 0;
-            B_Sel   = 0;
-            Imm_Sel = 0;
+            B_Sel   = 1;
+            Imm_Sel = s_imm;
             Reg_WEn = 0;
-            Mem_RW  = 0;
-            WB_Sel  = 0;
+            Mem_RW  = 1;
+            WB_Sel  = 0; //dont care
             PC_Sel  = 0;
             Br_Un   = 0;
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
             end
-        r_type: begin
-            ALU_Op  = 0;
-            A_Sel   = 0;
-            B_Sel   = 0;
-            Imm_Sel = 0;
+        b_type: begin
+            ALU_Op  = 4'd0;
+            A_Sel   = 1;
+            B_Sel   = 1;
+            Imm_Sel = b_imm;
             Reg_WEn = 0;
             Mem_RW  = 0;
             WB_Sel  = 0;
-            PC_Sel  = 0;
-            Br_Un   = 0;
+            if (funct3 == 3'b000)
+                PC_Sel = BrEq;          //beq
+            else if (funct3 == 3'b001)
+                PC_Sel = ~BrEq;         //bne
+            else if (funct3 == 3'b100 || funct3 == 3'b110)
+                PC_Sel = BrLT;          //blt & bltu
+            else if (funct3 == 3'b101 || funct3 == 3'b111)
+                PC_Sel = ~BrLT | BrEq;  //bge 
+            else PC_Sel = 0;
+            Br_Un   = funct3[1];
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
             end
-        r_type: begin
+    /*    r_type: begin
             ALU_Op  = 0;
             A_Sel   = 0;
             B_Sel   = 0;
