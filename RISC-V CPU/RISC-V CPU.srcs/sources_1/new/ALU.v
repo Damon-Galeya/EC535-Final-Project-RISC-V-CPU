@@ -39,10 +39,15 @@ always @(op, a, b) begin
         4'b0101:    out = a >> b; //srl
         4'b1101:    out = a >> b; //sra (fix to make shift right arithmnetic)
         4'b0011:    out = a < b; //sltu
-        4'b0010:    out = a < b; //slt (fix to make it signed)
-        
+        4'b0010:    begin 
+                    case ({a[31],b[31]})
+                        2'b00: out = a < b; //slt (fix to make it signed)
+                        2'b01: out = 1'b0;
+                        2'b10: out = 1'b1;
+                        2'b11: out = a > b;
+                    endcase
+                    end                      
     endcase
 end
-    
 
 endmodule

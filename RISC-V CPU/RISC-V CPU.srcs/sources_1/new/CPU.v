@@ -39,10 +39,10 @@ wire    [31:0]  IDEX_PC, IDEX_IR;
 
 // ID Wires
 
-wire [6:0] OpCode; //for when i decided to fix the control
+wire [4:0] OpCode; //for when i decide to fix the control
 wire [2:0] Funct3;
 wire [6:0] Funct7;
-assign OpCode = IDEX_IR[6:0];
+assign OpCode = IDEX_IR[6:2];
 assign Funct3 = IDEX_IR[14:12];
 assign Funct7 = IDEX_IR[31:25];
 
@@ -53,7 +53,12 @@ wire Branch_Unsigned, Branch_Equal, Branch_LessThan;
 wire RegWrite_Enable, Mem_ReadWrite;
 wire ID_flush;
 
-wire [31:0] ID_Immediate;
+wire [4:0] ReadReg2, ReadReg1, WriteRegister;
+assign WriteRegister = IDEX_IR[11:7];
+assign ReadReg1 = IDEX_IR[19:15];
+assign ReadReg2 = IDEX_IR[24:20];
+
+wire [31:0] Immediate;
 // ID/EX Wires
 
 wire EX_flush;
@@ -67,6 +72,7 @@ wire [31:0] ALU_o;
 // MEM/WB Wires
 
 // WB Wires
+wire [31:0] WriteBackData;
 wire [1:0]WB_Select;
 
 
@@ -85,7 +91,11 @@ reg_32bit   IFID_IRreg(IDEX_IR, Instruction_o, IFID_enable, IF_flushORreset, clk
 //////////////////      ID Stage        ////////////////////////////
 Control     PipeControl(PC_Select, Immediate_Select, RegWrite_Enable, Branch_Unsigned, A_Select, B_Select, ALU_Op, Mem_ReadWrite, WB_Select, IF_flush, ID_flush, EX_flush, IDEX_IR, Branch_Equal, Branch_LessThan); //rework the control if time
 
-Immediate_Picker imm(ID_Immediate, IDEX_IR[31:7], Immediate_Select);
+RegFile     RegisterFile(clk, reset, WriteBackData, WriteRegister, RegWrite_Enable, ReadReg1, ReadReg2, Reg_SrcA, Reg_SrcB);
+compare_32bit BranchCompare(Branch_LessThan, Branch_Equal, Reg_SrcA, Reg_SrcB, Branch_Unsigned);
+
+Immediate_Picker imm(Immediate, IDEX_IR[31:7], Immediate_Select);
+
 
 
 //////////////////      ID/EX Stage	    ////////////////////////////

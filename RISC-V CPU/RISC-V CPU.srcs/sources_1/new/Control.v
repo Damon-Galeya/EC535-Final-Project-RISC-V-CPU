@@ -25,18 +25,19 @@ module Control(PC_Sel, Imm_Sel, Reg_WEn, Br_Un, A_Sel, B_Sel, ALU_Op, Mem_RW, WB
 input   [31:0]  Instruction;
 input   BrEq, BrLT;
 
+output reg [3:0]ALU_Op;
+output reg [2:0]Imm_Sel;
+output reg [1:0]WB_Sel;
 output reg PC_Sel, Br_Un;
-output reg A_Sel, B_Sel, Imm_Sel;
+output reg A_Sel, B_Sel;
 output reg Reg_WEn, Mem_RW;
 output reg IF_flush, ID_flush, EX_flush;
+
 
 wire [4:0]  OpCode  = Instruction[6:2];
 wire [2:0]  funct3  = Instruction[14:12];
 wire        r_funct7  = Instruction[30]; //bit for sub and sra
 wire        i_funct7 = Instruction[28]; // bit for sra
-
-output reg [3:0]ALU_Op;
-output reg [1:0]WB_Sel;
 
 //OpCode Instructions
 parameter r_type    = 5'b01100;
@@ -69,6 +70,7 @@ always @(Instruction, BrEq, BrLT) begin
             WB_Sel  = 2'b01;//write back alu
             PC_Sel  = 0;
             Br_Un   = 0;
+            
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
@@ -83,6 +85,7 @@ always @(Instruction, BrEq, BrLT) begin
             WB_Sel  = 2'b01; //write back alu
             PC_Sel  = 0;
             Br_Un   = 0;
+            
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
@@ -97,6 +100,7 @@ always @(Instruction, BrEq, BrLT) begin
             WB_Sel  = 2'b0; //write back mem
             PC_Sel  = 0;
             Br_Un   = 0;
+            
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
@@ -111,6 +115,7 @@ always @(Instruction, BrEq, BrLT) begin
             WB_Sel  = 0; //dont care
             PC_Sel  = 0;
             Br_Un   = 0;
+            
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
@@ -133,6 +138,7 @@ always @(Instruction, BrEq, BrLT) begin
                 PC_Sel = ~BrLT | BrEq;  //bge 
             else PC_Sel = 0;
             Br_Un   = funct3[1];
+            
             IF_flush= 0;
             ID_flush= 0;
             EX_flush= 0;
