@@ -41,7 +41,7 @@ always @(op, a, b) begin
         4'b0011:    out = a < b; //sltu
         4'b0010:    out = a < b; //slt (fix to make it signed)
         
-endcase
+    endcase
 end
     
 
