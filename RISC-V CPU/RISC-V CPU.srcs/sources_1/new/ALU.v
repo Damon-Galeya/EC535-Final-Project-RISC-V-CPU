@@ -35,18 +35,17 @@ always @(op, a, b) begin
         4'b0111:    out = a & b; //and
         4'b0110:    out = a | b; //or
         4'b0100:    out = a ^ b; //xor
-        4'b0001:    out = a << b; //sll
-        4'b0101:    out = a >> b; //srl
-        4'b1101:    out = a >> b; //sra (fix to make shift right arithmnetic)
+        4'b0001:    out = a << b[4:0]; //sll
+        4'b0101:    out = a >> b[4:0]; //srl
+        4'b1101:    out = $signed(a) >>> b[4:0]; //sra (fix to make shift right arithmnetic)
         4'b0011:    out = a < b; //sltu
         4'b0010:    begin 
-                    case ({a[31],b[31]})
-                        2'b00: out = a < b; //slt (fix to make it signed)
-                        2'b01: out = 1'b0;
-                        2'b10: out = 1'b1;
-                        2'b11: out = a > b;
-                    endcase
-                    end                      
+                    if (a[31] != b[31])
+                        out = a[31];
+                    else 
+                        out = a < b;
+                    end             
+        default:    out = 32'd0;         
     endcase
 end
 

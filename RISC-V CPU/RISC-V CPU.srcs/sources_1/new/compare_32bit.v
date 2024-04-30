@@ -33,7 +33,7 @@ always @(a, b, unsign) begin
     case ({unsign,a[31],b[31]})
         3'b001: out = 1'b0;
         3'b010: out = 1'b1;
-        3'b011: out = a > b;
+        3'b011: out = a < b;
         default: out = a < b;
     endcase    
 end

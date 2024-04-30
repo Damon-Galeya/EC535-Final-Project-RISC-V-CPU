@@ -135,7 +135,7 @@ always @(Instruction, BrEq, BrLT) begin
             else if (funct3 == 3'b100 || funct3 == 3'b110)
                 PC_Sel = BrLT;          //blt & bltu
             else if (funct3 == 3'b101 || funct3 == 3'b111)
-                PC_Sel = ~BrLT | BrEq;  //bge 
+                PC_Sel = ~BrLT | BrEq;  //bge & bgeu
             else PC_Sel = 0;
             Br_Un   = funct3[1];
             
