@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Control(PC_Sel, Imm_Sel, Reg_WEn, Br_Un, A_Sel, B_Sel, ALU_Op, Mem_RW, WB_Sel, Instruction, BrEq, BrLT, IF_flush, ID_flush, EX_flush);
+module Control(PC_Sel, Imm_Sel, Reg_WEn, Br_Un, A_Sel, B_Sel, ALU_Op, Mem_RW, WB_Sel, IF_flush, ID_flush, EX_flush, Instruction, BrEq, BrLT);
 
 input   [31:0]  Instruction;
 input   BrEq, BrLT;
